@@ -4,5 +4,5 @@ project(solver)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(solver STATIC sources/solver.cpp)
-include_directories(include)
+add_library(solver STATIC ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp)
+target_include_directories(solver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
