@@ -1,38 +1,26 @@
 name: CI/CD on github
 on:  [push, pull_request]
 jobs:
-  build-gcc:
-    name: build with GCC (Linux)
+  build-linux:
+    name: build with ${{ matrix.compiler }}
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+        include:
+          - compiler: g++
+            install: g++
+          - compiler: clang++
+            install: clang
     steps:
       - name: check code
         uses: actions/checkout@v4
-      - name: remove cache
-        run: rm -rf build _build CMakeCache.txt CMakeFiles
-      - name: Install compil
+      - name: Install compiler
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++
+          sudo apt-get install -y cmake ${{ matrix.install }}
       - name: configure with CMake
-        run: cmake -H. -B_build -DCMAKE_CXX_COMPILER=g++
-      - name: build project
-        run: cmake --build _build
-  build-clang:
-    name: build with Clang (Linux)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: check code
-        uses: actions/checkout@v4
-      - name: remove cache
-        run: rm -rf build _build CMakeCache.txt CMakeFiles
-      - name: Install compil
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake clang
-      - name: configure with CMake
-        run: cmake -H. -B_build -DCMAKE_CXX_COMPILER=clang++
+        run: cmake -H. -B_build -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
       - name: build project
         run: cmake --build _build
   build-windows:
@@ -42,11 +30,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: remove cache
-        shell: cmd
-        run: |
-          if exist _build rmdir /s /q _build
-      - name: configure with CMake
+      - name: configure with CMakeS
         shell: cmd
         run: |
           mkdir _build
